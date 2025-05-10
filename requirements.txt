@@ -1,0 +1,16 @@
+# Core NLP and ML Libraries
+spacy==3.7.4
+nltk==3.8.1
+transformers==4.39.3
+
+# File System and Utility Libraries
+pathlib==1.0.1
+python-magic==0.4.27
+
+# Optional UI Libraries
+tkinter==8.6
+PyQt5==5.15.10
+
+# Development and Testing
+pytest==8.1.1
+mypy==1.9.0
