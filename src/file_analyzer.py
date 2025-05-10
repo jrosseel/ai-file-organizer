@@ -11,15 +11,30 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 class FileAnalyzer:
+    """
+    Initialize the FileAnalyzer with NLP models for content analysis.
+    
+    :param models_path: Optional path to pre-trained models
+    :param categories_path: Optional path to categories JSON file
+    """
+    def __init__(self, models_path: str = None, categories_path: str = None):
+       
+        # Load classification categories
+        self._load_classification_config(categories_path)
+        
+        # Initialize NLP and ML models
+        self._initialize_nlp_models()
+
+    """
+    Load classification categories from a JSON configuration file.
+    
+    Attempts to load categories from the specified path or a default location.
+    If loading fails, falls back to predefined default categories.
+    
+    :param categories_path: Optional path to the categories JSON file
+    """
     def _load_classification_config(self, categories_path: Optional[str] = None) -> None:
-        """
-        Load classification categories from a JSON configuration file.
         
-        Attempts to load categories from the specified path or a default location.
-        If loading fails, falls back to predefined default categories.
-        
-        :param categories_path: Optional path to the categories JSON file
-        """
         # Determine default categories path if not provided
         if categories_path is None:
             categories_path = os.path.join(
@@ -48,14 +63,15 @@ class FileAnalyzer:
                 "Work", "Personal", "Academic", "Freelance"
             ]
             self.version_types = ['unique', 'draft', 'revised', 'final']
+
+    """
+    Initialize Natural Language Processing and Machine Learning models.
     
+    Sets up spaCy for text processing and Hugging Face for zero-shot classification.
+    Handles model download if not already present.
+    """
     def _initialize_nlp_models(self) -> None:
-        """
-        Initialize Natural Language Processing and Machine Learning models.
-        
-        Sets up spaCy for text processing and Hugging Face for zero-shot classification.
-        Handles model download if not already present.
-        """
+
         # Initialize spaCy model for basic text processing
         try:
             self.nlp = spacy.load('en_core_web_sm')
@@ -73,30 +89,17 @@ class FileAnalyzer:
         # Initialize TF-IDF Vectorizer for content similarity
         self.vectorizer = TfidfVectorizer(stop_words='english')
 
-    def __init__(self, models_path: str = None, categories_path: str = None):
-        """
-        Initialize the FileAnalyzer with NLP models for content analysis.
-        
-        :param models_path: Optional path to pre-trained models
-        :param categories_path: Optional path to categories JSON file
-        """
-        # Load classification categories
-        self._load_classification_config(categories_path)
-        
-        # Initialize NLP and ML models
-        self._initialize_nlp_models()
-
-    def extract_metadata(self, file_path: pathlib.Path) -> Dict[str, Any]:
-        """
-        Extract comprehensive metadata for a given file.
-        
-        Retrieves file attributes including name, extension, size, creation time,
-        modification time, and creation year.
-        
-        :param file_path: Path to the file to extract metadata from
-        :return: Dictionary containing file metadata
-        :raises Exception: If file metadata cannot be accessed
-        """
+    """
+    Extract comprehensive metadata for a given file.
+    
+    Retrieves file attributes including name, extension, size, creation time,
+    modification time, and creation year.
+    
+    :param file_path: Path to the file to extract metadata from
+    :return: Dictionary containing file metadata
+    :raises Exception: If file metadata cannot be accessed
+    """
+    def extract_metadata(self, file_path: pathlib.Path) -> Dict[str, Any]:  
         try:
             stats = file_path.stat()
             return {
@@ -111,18 +114,18 @@ class FileAnalyzer:
             print(f"Error extracting metadata for {file_path}: {e}")
             return {}
 
+    """
+    Classify the purpose of a file using zero-shot classification.
+    
+    Uses a pre-trained zero-shot classification model to assign
+    one or more purpose categories to the file content. Categories
+    are determined by comparing the content against predefined purpose labels.
+    
+    :param file_content: Textual content of the file to classify
+    :return: List of purpose categories with confidence above 0.5
+    :raises Exception: If classification pipeline encounters an error
+    """
     def classify_file_purpose(self, file_content: str) -> List[str]:
-        """
-        Classify the purpose of a file using zero-shot classification.
-        
-        Uses a pre-trained zero-shot classification model to assign
-        one or more purpose categories to the file content. Categories
-        are determined by comparing the content against predefined purpose labels.
-        
-        :param file_content: Textual content of the file to classify
-        :return: List of purpose categories with confidence above 0.5
-        :raises Exception: If classification pipeline encounters an error
-        """
         try:
             # Perform zero-shot classification
             classification = self.classifier(
@@ -141,13 +144,13 @@ class FileAnalyzer:
             print(f"Classification error: {e}")
             return []
 
+    """
+    Perform comprehensive file analysis.
+    
+    :param file_path: Path to the file to analyze
+    :return: Analysis results
+    """
     def analyze_file(self, file_path: pathlib.Path) -> Dict[str, Any]:
-        """
-        Perform comprehensive file analysis.
-        
-        :param file_path: Path to the file to analyze
-        :return: Analysis results
-        """
         # Extract metadata
         metadata = self.extract_metadata(file_path)
         
