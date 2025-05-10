@@ -1,0 +1,100 @@
+# AI File Organizer - Product Requirements
+
+## Classification Dimensions
+
+1. Purpose Classification
+   - Categories:
+     * Work
+     * Leisure
+     * Personal Projects
+     * Private
+     * Family
+     * Education
+     * Finance
+     * Health
+     * Other
+
+2. Project Hierarchy Classification
+   - Main Project Levels:
+     * Work (Company/Organization)
+     * Personal
+     * Academic
+     * Freelance
+   - Subproject Granularity:
+     * Work Example: 
+       - Main Project: Google
+       - Subprojects: 
+         * Client A
+         * Internal Initiative B
+         * Department C
+     * Personal Example:
+       - Main Project: Home Renovation
+       - Subprojects:
+         * Kitchen Remodel
+         * Garden Landscaping
+
+3. Temporal Classification
+   - Time-based Categorization:
+     * Year of Creation/Last Modified
+     * Decade Grouping
+     * Fiscal/Academic Year
+     * Quarterly Periods
+
+## Classification Requirements
+
+1. Multi-Dimensional Tagging
+   - Each file can belong to multiple categories
+   - Hierarchical and nested classification support
+   - Flexible and extensible category system
+
+2. Machine Learning Approach
+   - Use supervised learning for initial training
+   - Implement active learning for continuous improvement
+   - Support user-defined custom categories
+
+3. Metadata Extraction
+   - Extract relevant metadata for classification
+   - Support multiple file types (docx, pdf, txt, etc.)
+   - Preserve original file metadata
+
+4. User Interaction
+   - Allow manual category override
+   - Provide confidence scores for automatic classifications
+   - Enable user feedback for model improvement
+
+## Technical Constraints
+- Minimal performance overhead
+- Low memory footprint
+- Cross-platform compatibility
+- Support for large file collections
+
+## File Similarity and Versioning Features
+1. Similarity Detection Techniques
+   - Filename string matching
+   - File extension comparison
+   - Content-based similarity analysis
+     * TF-IDF vectorization
+     * Cosine similarity calculation
+     * Semantic embedding comparison
+   - Configurable similarity thresholds
+
+2. Versioning Strategy
+   - Version generation based on:
+     * Content completeness
+     * Similarity percentage
+     * Modification timestamp
+     * Unique content hash
+   - Automatic version naming
+   - Preservation of original file metadata
+   - User-configurable versioning rules
+
+3. Conflict Resolution
+   - Propose intelligent file renaming
+   - Maintain version history
+   - Optional manual review
+
+## Future Expansion
+- Integration with cloud storage platforms
+- Advanced semantic analysis
+- Predictive file organization
+- Machine learning-enhanced similarity detection

@@ -24,6 +24,13 @@ An AI-powered file organization tool designed to intelligently reorganize files 
 - [ ] Implement content classification algorithm
 - [ ] Create content similarity and categorization logic
 - [ ] Design file metadata extraction
+- [ ] Develop advanced file similarity detection
+  - Implement multi-technique similarity scoring
+  - Create intelligent versioning mechanism
+- [ ] Build conflict resolution system for similar files
+  - Automatic version naming
+  - Metadata preservation
+  - User review options
 
 ## 4. Folder Reorganization Engine
 - [ ] Develop intelligent folder hierarchy generation

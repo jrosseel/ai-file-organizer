@@ -1,15 +1,17 @@
 # Core NLP and ML Libraries
 spacy==3.7.4
 nltk==3.8.1
-transformers==4.39.3
+transformers==4.30.2
+torch==2.0.1
+spacy==3.5.2
+en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.5.0/en_core_web_sm-3.5.0-py3-none-any.whl
 
 # File System and Utility Libraries
-pathlib==1.0.1
 python-magic==0.4.27
 
 # Optional UI Libraries
-PyQt5==5.15.10
+tkinter
 
 # Development and Testing
-pytest==8.1.1
+pytest
 mypy==1.9.0
