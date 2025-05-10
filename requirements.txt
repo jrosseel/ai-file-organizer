@@ -8,7 +8,6 @@ pathlib==1.0.1
 python-magic==0.4.27
 
 # Optional UI Libraries
-tkinter==8.6
 PyQt5==5.15.10
 
 # Development and Testing
