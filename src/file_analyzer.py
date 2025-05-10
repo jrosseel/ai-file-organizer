@@ -11,31 +11,35 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 class FileAnalyzer:
-    def __init__(self, models_path: str = None, config_path: str = None):
+    def _load_classification_config(self, categories_path: Optional[str] = None) -> None:
         """
-        Initialize the FileAnalyzer with NLP models for content analysis.
+        Load classification categories from a JSON configuration file.
         
-        :param models_path: Optional path to pre-trained models
-        :param config_path: Optional path to config JSON file
+        Attempts to load categories from the specified path or a default location.
+        If loading fails, falls back to predefined default categories.
+        
+        :param categories_path: Optional path to the categories JSON file
         """
-        # Load categories from JSON
-        if config_path is None:
-            config_path = os.path.join(
+        # Determine default categories path if not provided
+        if categories_path is None:
+            categories_path = os.path.join(
                 os.path.dirname(__file__), 
-                '..', 'resources', 'config.json'
+                '..', 'resources', 'categories.json'
             )
         
-        """Load classification config"""
         try:
-            with open(config_path, 'r') as f:
-                config = json.load(f)
+            # Attempt to load categories from JSON file
+            with open(categories_path, 'r') as f:
+                categories = json.load(f)
             
-            self.purpose_categories = config.get('purpose_categories', [])
-            self.project_categories = config.get('project_categories', [])
-            self.version_types      = config.get('version_types', ['unique', 'draft', 'revised', 'final'])
+            # Extract categories with fallback to empty lists
+            self.purpose_categories = categories.get('purpose_categories', [])
+            self.project_categories = categories.get('project_categories', [])
+            self.version_types = categories.get('version_types', ['unique', 'draft', 'revised', 'final'])
+        
         except Exception as e:
-            print(f"Error loading classification config: {e}")
-            # Fallback to default categories
+            # Log error and use default categories if loading fails
+            print(f"Error loading categories: {e}")
             self.purpose_categories = [
                 "Work", "Leisure", "Personal Projects", "Private", 
                 "Family", "Education", "Finance", "Health"
@@ -44,7 +48,14 @@ class FileAnalyzer:
                 "Work", "Personal", "Academic", "Freelance"
             ]
             self.version_types = ['unique', 'draft', 'revised', 'final']
+    
+    def _initialize_nlp_models(self) -> None:
+        """
+        Initialize Natural Language Processing and Machine Learning models.
         
+        Sets up spaCy for text processing and Hugging Face for zero-shot classification.
+        Handles model download if not already present.
+        """
         # Initialize spaCy model for basic text processing
         try:
             self.nlp = spacy.load('en_core_web_sm')
@@ -62,12 +73,29 @@ class FileAnalyzer:
         # Initialize TF-IDF Vectorizer for content similarity
         self.vectorizer = TfidfVectorizer(stop_words='english')
 
+    def __init__(self, models_path: str = None, categories_path: str = None):
+        """
+        Initialize the FileAnalyzer with NLP models for content analysis.
+        
+        :param models_path: Optional path to pre-trained models
+        :param categories_path: Optional path to categories JSON file
+        """
+        # Load classification categories
+        self._load_classification_config(categories_path)
+        
+        # Initialize NLP and ML models
+        self._initialize_nlp_models()
+
     def extract_metadata(self, file_path: pathlib.Path) -> Dict[str, Any]:
         """
-        Extract file metadata for classification.
+        Extract comprehensive metadata for a given file.
         
-        :param file_path: Path to the file
-        :return: Dictionary of file metadata
+        Retrieves file attributes including name, extension, size, creation time,
+        modification time, and creation year.
+        
+        :param file_path: Path to the file to extract metadata from
+        :return: Dictionary containing file metadata
+        :raises Exception: If file metadata cannot be accessed
         """
         try:
             stats = file_path.stat()
@@ -85,10 +113,15 @@ class FileAnalyzer:
 
     def classify_file_purpose(self, file_content: str) -> List[str]:
         """
-        Classify file purpose using zero-shot classification.
+        Classify the purpose of a file using zero-shot classification.
         
-        :param file_content: Text content of the file
-        :return: List of purpose categories
+        Uses a pre-trained zero-shot classification model to assign
+        one or more purpose categories to the file content. Categories
+        are determined by comparing the content against predefined purpose labels.
+        
+        :param file_content: Textual content of the file to classify
+        :return: List of purpose categories with confidence above 0.5
+        :raises Exception: If classification pipeline encounters an error
         """
         try:
             # Perform zero-shot classification
