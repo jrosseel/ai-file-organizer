@@ -1,4 +1,5 @@
 import os
+import json
 import pathlib
 import difflib
 import hashlib
@@ -10,12 +11,40 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 class FileAnalyzer:
-    def __init__(self, models_path: str = None):
+    def __init__(self, models_path: str = None, config_path: str = None):
         """
         Initialize the FileAnalyzer with NLP models for content analysis.
         
         :param models_path: Optional path to pre-trained models
+        :param config_path: Optional path to config JSON file
         """
+        # Load categories from JSON
+        if config_path is None:
+            config_path = os.path.join(
+                os.path.dirname(__file__), 
+                '..', 'resources', 'config.json'
+            )
+        
+        """Load classification config"""
+        try:
+            with open(config_path, 'r') as f:
+                config = json.load(f)
+            
+            self.purpose_categories = config.get('purpose_categories', [])
+            self.project_categories = config.get('project_categories', [])
+            self.version_types      = config.get('version_types', ['unique', 'draft', 'revised', 'final'])
+        except Exception as e:
+            print(f"Error loading classification config: {e}")
+            # Fallback to default categories
+            self.purpose_categories = [
+                "Work", "Leisure", "Personal Projects", "Private", 
+                "Family", "Education", "Finance", "Health"
+            ]
+            self.project_categories = [
+                "Work", "Personal", "Academic", "Freelance"
+            ]
+            self.version_types = ['unique', 'draft', 'revised', 'final']
+        
         # Initialize spaCy model for basic text processing
         try:
             self.nlp = spacy.load('en_core_web_sm')
@@ -30,15 +59,8 @@ class FileAnalyzer:
             model="facebook/bart-large-mnli"
         )
         
-        # Predefined classification categories
-        self.purpose_categories = [
-            "Work", "Leisure", "Personal Projects", "Private", 
-            "Family", "Education", "Finance", "Health"
-        ]
-        
-        self.project_categories = [
-            "Work", "Personal", "Academic", "Freelance"
-        ]
+        # Initialize TF-IDF Vectorizer for content similarity
+        self.vectorizer = TfidfVectorizer(stop_words='english')
 
     def extract_metadata(self, file_path: pathlib.Path) -> Dict[str, Any]:
         """

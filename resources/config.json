@@ -1,0 +1,24 @@
+{
+    "purpose_categories": [
+        "Work", 
+        "Leisure", 
+        "Personal Projects", 
+        "Private", 
+        "Family", 
+        "Education", 
+        "Finance", 
+        "Health"
+    ],
+    "project_categories": [
+        "Work", 
+        "Personal", 
+        "Academic", 
+        "Freelance"
+    ],
+    "version_types": [
+        "unique",
+        "draft", 
+        "revised", 
+        "final"
+    ]
+}
