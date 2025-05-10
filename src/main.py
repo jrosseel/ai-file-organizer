@@ -8,10 +8,12 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from file_processor import process_files
 
-# Main entry point for the file analysis CLI.
-# 
-# Parses command-line arguments and initiates file processing.
 def main():
+    """ 
+    Main entry point for the file analysis CLI.
+
+    Parses command-line arguments and initiates file processing.
+    """
     # Set up argument parser
     parser = argparse.ArgumentParser(description='Advanced File Analyzer')
     parser.add_argument(

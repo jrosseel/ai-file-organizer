@@ -5,15 +5,17 @@ from typing import List, Optional
 
 from file_analyzer import FileAnalyzer
 
-# Process files in a given directory using FileAnalyzer.
-# 
-# Args:
-#     directory: Directory containing files to analyze
-#     output_dir: Optional directory to save analysis results
-# 
-# Returns:
-#     List of file analysis results
 def process_files(directory: pathlib.Path, output_dir: Optional[pathlib.Path] = None) -> List[dict]:
+    """
+    Process files in a given directory using FileAnalyzer.
+
+    Args:
+        directory: Directory containing files to analyze
+        output_dir: Optional directory to save analysis results
+
+    Returns:
+        List of file analysis results
+    """
     # Initialize FileAnalyzer
     analyzer = FileAnalyzer()
     
