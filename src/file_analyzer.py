@@ -1,14 +1,10 @@
 import os
 import json
 import pathlib
-import difflib
-import hashlib
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional
 import spacy
 from transformers import pipeline
-import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
 
 class FileAnalyzer:
     """
