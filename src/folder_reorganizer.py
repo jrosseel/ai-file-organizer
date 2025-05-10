@@ -4,21 +4,20 @@ import shutil
 import json
 from typing import Dict, List, Optional
 
+"""Intelligent folder reorganization engine for file management.
+
+This class provides advanced file organization strategies using both
+rule-based and machine learning approaches. It supports generating
+intelligent folder hierarchies, previewing changes, and applying
+or rolling back reorganization.
+
+Attributes:
+    config (dict): Configuration for folder reorganization rules.
+    _previous_state (dict): Tracks file locations before reorganization.
+"""
 class FolderReorganizer:
-    """Intelligent folder reorganization engine for file management.
 
-    This class provides advanced file organization strategies using both
-    rule-based and machine learning approaches. It supports generating
-    intelligent folder hierarchies, previewing changes, and applying
-    or rolling back reorganization.
-
-    Attributes:
-        config (dict): Configuration for folder reorganization rules.
-        _previous_state (dict): Tracks file locations before reorganization.
-    """
-    
-    def __init__(self, config_path: Optional[str] = None):
-        """Initialize the FolderReorganizer with optional configuration.
+    """Initialize the FolderReorganizer with optional configuration.
 
         Args:
             config_path (Optional[str], optional): Path to the reorganization
@@ -28,15 +27,15 @@ class FolderReorganizer:
         Raises:
             ValueError: If the configuration file is invalid or missing
                 required keys.
-        """
+    """
+    def __init__(self, config_path: Optional[str] = None):
         # Load configuration
         self._load_reorganization_config(config_path)
         
         # Tracking for undo functionality
         self._previous_state = {}
-    
-    def _load_reorganization_config(self, config_path: Optional[str] = None):
-        """Load reorganization configuration from JSON file.
+
+    """Load reorganization configuration from JSON file.
 
         Reads the configuration file and validates its contents. The configuration
         defines rules for file categorization and hierarchy generation.
@@ -49,7 +48,8 @@ class FolderReorganizer:
             FileNotFoundError: If the configuration file does not exist.
             json.JSONDecodeError: If the configuration file contains invalid JSON.
             ValueError: If the configuration is missing required keys.
-        """
+    """
+    def _load_reorganization_config(self, config_path: Optional[str] = None):
         if config_path is None:
             config_path = os.path.join(
                 os.path.dirname(__file__), 
@@ -66,8 +66,7 @@ class FolderReorganizer:
             if key not in self.config:
                 raise ValueError(f"Missing required configuration key: {key}")
     
-    def generate_folder_hierarchy(self, source_directory: pathlib.Path) -> Dict[str, List[pathlib.Path]]:
-        """Generate an intelligent folder hierarchy based on file characteristics.
+    """Generate an intelligent folder hierarchy based on file characteristics.
 
         Scans the source directory and categorizes files according to the
         configured hierarchy rules. Creates a mapping of categories to files.
@@ -84,7 +83,8 @@ class FolderReorganizer:
             >>> hierarchy = reorganizer.generate_folder_hierarchy(Path('/path/to/files'))
             >>> print(hierarchy)
             {'Documents': [Path('/path/to/files/report.pdf'), ...], ...}
-        """
+    """
+    def generate_folder_hierarchy(self, source_directory: pathlib.Path) -> Dict[str, List[pathlib.Path]]:
         # Placeholder for hierarchy generation logic
         proposed_hierarchy = {}
         
@@ -101,8 +101,7 @@ class FolderReorganizer:
         
         return proposed_hierarchy
     
-    def _categorize_file(self, file_path: pathlib.Path) -> str:
-        """Categorize a file based on predefined rules and weights.
+    """Categorize a file based on predefined rules and weights.
 
         Determines the appropriate category for a file by applying
         the configured hierarchy rules in order.
@@ -118,7 +117,9 @@ class FolderReorganizer:
             The categorization is based on the rules defined in the
             configuration file, typically using file extensions and
             other metadata.
-        """
+    """
+    def _categorize_file(self, file_path: pathlib.Path) -> str:
+       
         # Implement categorization logic using configuration rules
         # This is a simplified version and should be expanded
         for rule in self.config.get('hierarchy_rules', []):
@@ -128,8 +129,7 @@ class FolderReorganizer:
         
         return 'Uncategorized'
     
-    def _check_rule_conditions(self, file_path: pathlib.Path, rule: Dict) -> bool:
-        """Check if a file matches a specific reorganization rule.
+    """Check if a file matches a specific reorganization rule.
 
         Evaluates whether a given file satisfies the conditions
         specified in a reorganization rule.
@@ -144,7 +144,9 @@ class FolderReorganizer:
         Note:
             Currently supports checking file extensions. Can be extended
             to include more sophisticated rule matching in the future.
-        """
+    """
+    def _check_rule_conditions(self, file_path: pathlib.Path, rule: Dict) -> bool:
+       
         # Check file extension
         if 'extensions' in rule:
             if file_path.suffix[1:] not in rule['extensions']:
@@ -153,8 +155,7 @@ class FolderReorganizer:
         # Additional rule checking can be added here
         return True
     
-    def preview_changes(self, proposed_hierarchy: Dict[str, List[pathlib.Path]]) -> None:
-        """Preview proposed folder reorganization without making changes.
+    """Preview proposed folder reorganization without making changes.
 
         Prints a detailed preview of the proposed folder hierarchy,
         showing how files would be categorized without actually
@@ -169,15 +170,16 @@ class FolderReorganizer:
             >>> hierarchy = reorganizer.generate_folder_hierarchy(Path('/files'))
             >>> reorganizer.preview_changes(hierarchy)
             # Prints categorized files to console
-        """
+    """
+    def preview_changes(self, proposed_hierarchy: Dict[str, List[pathlib.Path]]) -> None:
+        
         print("Proposed Folder Reorganization:")
         for category, files in proposed_hierarchy.items():
             print(f"\nCategory: {category}")
             for file_path in files:
                 print(f"  - {file_path}")
     
-    def apply_reorganization(self, proposed_hierarchy: Dict[str, List[pathlib.Path]], base_output_dir: pathlib.Path):
-        """Apply the proposed folder reorganization.
+    """Apply the proposed folder reorganization.
 
         Moves files into category-specific subdirectories based on
         the proposed hierarchy. Tracks original file locations for
@@ -196,7 +198,9 @@ class FolderReorganizer:
 
         Raises:
             OSError: If there are issues creating directories or moving files
-        """
+    """
+    def apply_reorganization(self, proposed_hierarchy: Dict[str, List[pathlib.Path]], base_output_dir: pathlib.Path):
+        
         # Track previous state for potential rollback
         self._previous_state = {}
         
@@ -213,8 +217,7 @@ class FolderReorganizer:
                 destination = category_dir / file_path.name
                 shutil.move(str(file_path), str(destination))
     
-    def rollback(self, base_output_dir: pathlib.Path):
-        """Rollback the last reorganization to the previous state.
+    """Rollback the last reorganization to the previous state.
 
         Restores files to their original locations before the
         reorganization was applied. Removes any empty category
@@ -234,7 +237,9 @@ class FolderReorganizer:
 
         Warns:
             Prints a message if no previous state exists to rollback
-        """
+    """
+    def rollback(self, base_output_dir: pathlib.Path):
+        
         if not self._previous_state:
             print("No previous state to rollback.")
             return
