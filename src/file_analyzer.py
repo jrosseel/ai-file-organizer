@@ -171,13 +171,3 @@ class FileAnalyzer:
             'purposes': purposes,
             'content_preview': content[:500]  # Preview first 500 chars
         }
-
-def main():
-    # Example usage
-    analyzer = FileAnalyzer()
-    test_file = pathlib.Path('/path/to/test/file.txt')
-    result = analyzer.analyze_file(test_file)
-    print(result)
-
-if __name__ == '__main__':
-    main()
