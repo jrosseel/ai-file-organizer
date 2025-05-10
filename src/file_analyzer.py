@@ -30,12 +30,19 @@ class FileAnalyzer:
     :param categories_path: Optional path to the categories JSON file
     """
     def _load_classification_config(self, categories_path: Optional[str] = None) -> None:
-        
+        """
+        Load classification categories from a JSON configuration file.
+
+        Raises:
+            FileNotFoundError: If the categories configuration file cannot be found
+            json.JSONDecodeError: If the categories file contains invalid JSON
+            ValueError: If required categories are missing or invalid
+        """
         # Determine default categories path if not provided
         if categories_path is None:
             categories_path = os.path.join(
                 os.path.dirname(__file__), 
-                '..', 'resources', 'categories.json'
+                '..', 'resources', 'config.json'
             )
         
         try:
@@ -43,22 +50,22 @@ class FileAnalyzer:
             with open(categories_path, 'r') as f:
                 categories = json.load(f)
             
-            # Extract categories with fallback to empty lists
-            self.purpose_categories = categories.get('purpose_categories', [])
-            self.project_categories = categories.get('project_categories', [])
-            self.version_types = categories.get('version_types', ['unique', 'draft', 'revised', 'final'])
+            # Validate required categories
+            required_keys = ['purpose_categories', 'project_categories', 'version_types']
+            for key in required_keys:
+                if key not in categories or not categories[key]:
+                    raise ValueError(f"Missing or invalid required category configuration: {key}. Please check your categories.json file.")
+            
+            # Extract categories
+            self.purpose_categories = categories['purpose_categories']
+            self.project_categories = categories['project_categories']
+            self.version_types = categories['version_types']
         
-        except Exception as e:
-            # Log error and use default categories if loading fails
-            print(f"Error loading categories: {e}")
-            self.purpose_categories = [
-                "Work", "Leisure", "Personal Projects", "Private", 
-                "Family", "Education", "Finance", "Health"
-            ]
-            self.project_categories = [
-                "Work", "Personal", "Academic", "Freelance"
-            ]
-            self.version_types = ['unique', 'draft', 'revised', 'final']
+        except FileNotFoundError:
+            raise ValueError(f"Configuration file not found at {categories_path}")
+        
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON in configuration file: {e}")
 
     """
     Initialize Natural Language Processing and Machine Learning models.
